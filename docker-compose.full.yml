@@ -1,0 +1,110 @@
+version: '2'
+
+services:
+  gasp:
+    extends:
+      file: docker-compose.tmpl.yml
+      service: gasp-base-mainnet
+
+  gasp-testnet:
+    extends:
+      file: docker-compose.tmpl.yml
+      service: gasp-base-testnet
+
+  aspire:
+    extends:
+      file: docker-compose.tmpl.yml
+      service: aspire-base-mainnet
+    links:
+      - gasp
+
+  aspire-testnet:
+    extends:
+      file: docker-compose.tmpl.yml
+      service: aspire-base-testnet
+    links:
+      - gasp-testnet
+
+  mongodb:
+    extends:
+      file: docker-compose.tmpl.yml
+      service: mongodb-base
+
+  redis:
+    extends:
+      file: docker-compose.tmpl.yml
+      service: redis-base
+
+  # armory-utxsvr:
+  #   extends:
+  #     file: docker-compose.tmpl.yml
+  #     service: armory-utxsvr-base-mainnet
+  #   links:
+  #     - gasp
+
+  # armory-utxsvr-testnet:
+  #   extends:
+  #     file: docker-compose.tmpl.yml
+  #     service: armory-utxsvr-base-testnet
+  #   links:
+  #     - gasp-testnet
+
+  aspireblock:
+    extends:
+      file: docker-compose.tmpl.yml
+      service: aspireblock-base-mainnet
+    links:
+      - gasp
+      - aspire
+      - mongodb
+      - redis
+      # - armory-utxsvr
+
+  aspireblock-testnet:
+    extends:
+      file: docker-compose.tmpl.yml
+      service: aspireblock-base-testnet
+    links:
+      - gasp-testnet
+      - aspire-testnet
+      - mongodb
+      - redis
+      # - armory-utxsvr-testnet
+
+  aspirewallet:
+    extends:
+      file: docker-compose.tmpl.yml
+      service: aspirewallet-base
+    links:
+      - redis
+      - aspireblock
+      - aspireblock-testnet
+
+  aspire-scout:
+    extends:
+      file: docker-compose.tmpl.yml
+      service: aspire-scout-base-mainnet
+    links:
+      - gasp
+      - aspireblock
+      - aspire
+      - mongodb
+      - redis
+
+  aspire-scout-testnet:
+    extends:
+      file: docker-compose.tmpl.yml
+      service: aspire-scout-base-testnet
+    links:
+      - gasp-testnet
+      - aspireblock-testnet
+      - aspire-testnet
+      - mongodb
+      - redis
+
+volumes:
+  gasp-data:
+  aspire-data:
+  aspireblock-data:
+  mongodb-data:
+  armory-data:

@@ -1,0 +1,11 @@
+[Default]
+rpc-host=0.0.0.0
+backend-connect=gasp
+backend-user=rpc
+backend-password=rpc
+aspire-connect=aspire
+aspire-user=rpc
+aspire-password=rpc
+mongodb-connect=mongodb
+redis-connect=redis
+tx-log-file

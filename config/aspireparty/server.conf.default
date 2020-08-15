@@ -1,0 +1,10 @@
+[Default]
+backend-ssl-no-verify=True
+backend-name=addrindex
+backend-connect=gasp
+backend-user=rpc
+backend-password=rpc
+rpc-host=0.0.0.0
+rpc-user=rpc
+rpc-password=rpc
+api-log-file

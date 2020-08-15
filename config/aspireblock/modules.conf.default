@@ -1,0 +1,4 @@
+[LoadModule]
+lib/modules/assets = True
+lib/modules/aspirewallet = True
+lib/modules/transaction_stats = True

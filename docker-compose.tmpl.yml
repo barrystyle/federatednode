@@ -1,0 +1,204 @@
+version: '2'
+
+# Data volumes defined in these services (which must be defined in child templates):
+# gasp-data
+# aspire-data
+# aspireblock-data
+# armory-data
+# mongodb-data
+
+services:
+  gasp-base:
+    build:
+      context: ./extras/docker/gasp
+    volumes:
+      - ./config/gasp:/root/.gasp-config
+      - gasp-data:/root/.gasp/
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "30"
+
+  gasp-base-mainnet:
+    hostname: ${HOSTNAME_BASE}-bc
+    extends:
+      service: gasp-base
+    ports:
+      - "8332:8332"
+    environment:
+      - PARAMS=-conf=/root/.gasp-config/gasp.conf
+
+  gasp-base-testnet:
+    hostname: ${HOSTNAME_BASE}-bc-t
+    extends:
+      service: gasp-base
+    ports:
+      - "18332:18332"
+    environment:
+      - PARAMS=-conf=/root/.gasp-config/gasp.testnet.conf
+
+  aspire-base:
+    image: aspireorg/aspire-lib:${FEDNODE_RELEASE_TAG}
+    volumes:
+      - ./src/aspire-lib:/aspire-lib
+      - ./src/aspire-cli:/aspire-cli
+      - ./config/aspire:/root/.config/aspire
+      - aspire-data:/root/.local/share/aspire
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "50"
+
+  aspire-base-mainnet:
+    hostname: ${HOSTNAME_BASE}-cp
+    extends:
+      service: aspire-base
+    ports:
+      - "4000:4000"
+    environment:
+      - PARAMS=--config-file=/root/.config/aspire/server.conf
+
+  aspire-base-testnet:
+    hostname: ${HOSTNAME_BASE}-cp-t
+    extends:
+      service: aspire-base
+    ports:
+      - "14000:14000"
+    environment:
+      - PARAMS=--config-file=/root/.config/aspire/server.testnet.conf
+
+  aspireblock-base:
+    image: aspireorg/aspireblock:${FEDNODE_RELEASE_TAG}
+    volumes:
+      - ./src/aspireblock:/aspireblock
+      - ./config/aspireblock:/root/.config/aspireblock
+      - aspireblock-data:/root/.local/share/aspireblock
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "50"
+
+  aspireblock-base-mainnet:
+    hostname: ${HOSTNAME_BASE}-cb
+    extends:
+      service: aspireblock-base
+    ports:
+      - "4100:4100"
+    environment:
+      - PARAMS=--config-file=/root/.config/aspireblock/server.conf
+
+  aspireblock-base-testnet:
+    hostname: ${HOSTNAME_BASE}-cb-t
+    extends:
+      service: aspireblock-base
+    ports:
+      - "14100:14100"
+      - "14101:14101"
+      - "14102:14102"
+    environment:
+      - PARAMS=--config-file=/root/.config/aspireblock/server.testnet.conf
+
+  armory-utxsvr-base:
+    image: aspireorg/armory-utxsvr:${FEDNODE_RELEASE_TAG}
+    volumes:
+      - ./src/armory-utxsvr:/armory-utxsvr
+      - armory-data:/root/.armory
+      - gasp-data:/root/.gasp/
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "30"
+
+  armory-utxsvr-base-mainnet:
+    hostname: ${HOSTNAME_BASE}-amry
+    extends:
+      service: armory-utxsvr-base
+    environment:
+      - ASPIREGASD_URL=http://rpc:rpc@gasp:8332
+      - RPC_HOST=0.0.0.0
+
+  armory-utxsvr-base-testnet:
+    hostname: ${HOSTNAME_BASE}-amry-t
+    extends:
+      service: armory-utxsvr-base
+    environment:
+      - ASPIREGASD_URL=http://rpc:rpc@gasp-testnet:18332
+      - RPC_HOST=0.0.0.0
+      - PARAMS=--testnet
+
+  aspirewallet-base:
+    hostname: ${HOSTNAME_BASE}-cw
+    image: aspireorg/aspirewallet:${FEDNODE_RELEASE_TAG}
+    volumes:
+      - ./src/aspirewallet:/aspirewallet
+      - ./config/aspirewallet/ssl:/ssl_config
+      - aspireblock-data:/aspireblock_data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "30"
+    ports:
+      - "80:80"
+      - "443:443"
+
+  aspire-scout-base-mainnet:
+    hostname: ${HOSTNAME_BASE}-scout
+    image: aspireorg/aspire-scout:${FEDNODE_RELEASE_TAG}
+    volumes:
+      - ./src/aspire-scout:/scout
+      - ./config/aspire-scout/:/config/
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "30"
+    ports:
+      - "8182:8182"
+    environment:
+      - SCOUT_CONFIG=/config/mainnet.py
+
+  aspire-scout-base-testnet:
+    hostname: ${HOSTNAME_BASE}-scout-testnet
+    image: aspireorg/aspire-scout:${FEDNODE_RELEASE_TAG}
+    volumes:
+      - ./src/aspire-scout:/scout
+      - ./config/aspire-scout/:/config/
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "30"
+    ports:
+      - "8183:8183"
+    environment:
+      - SCOUT_CONFIG=/config/testnet.py
+
+  mongodb-base:
+    hostname: ${HOSTNAME_BASE}-mongo
+    image: mongo:3.2
+    volumes:
+      - mongodb-data:/data/db
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "30"
+    ports:
+      - ${MONGODB_HOST_INTERFACE}:27017:27017
+
+  redis-base:
+    hostname: ${HOSTNAME_BASE}-redis
+    image: redis:3.2
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./config/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "30"

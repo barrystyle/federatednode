@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+  gasp:
+    extends:
+      file: docker-compose.tmpl.yml
+      service: gasp-base-mainnet
+
+  gasp-testnet:
+    extends:
+      file: docker-compose.tmpl.yml
+      service: gasp-base-testnet
+
+  aspire:
+    extends:
+      file: docker-compose.tmpl.yml
+      service: aspire-base-mainnet
+    links:
+      - gasp
+
+  aspire-testnet:
+    extends:
+      file: docker-compose.tmpl.yml
+      service: aspire-base-testnet
+    links:
+      - gasp-testnet
+
+volumes:
+  gasp-data:
+  aspire-data:

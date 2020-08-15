@@ -1,0 +1,13 @@
+testnet=1
+rpcuser=rpc
+rpcpassword=rpc
+server=1
+printtoconsole=1
+rpcallowip=0.0.0.0/0
+rpcbind=0.0.0.0
+rpcport=18332
+rpcthreads=8
+rpcworkqueue=16
+rpctimeout=300
+txindex=1
+addrindex=1
