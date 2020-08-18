@@ -6,7 +6,7 @@ MAINTAINER Aspire Developers <admin@aspirecrypto.com>
 ENV ASPIREGAS_VER="1.0.0"
 WORKDIR /tmp
 # COPY gasp-x86_64-unknown-linux-gnu.tar.gz /tmp/
-RUN wget -O gasp.tar.gz https://github.com/AspireOrg/gAsp/releases/download/v${ASPIREGAS_VER}/gasp-x86_64-unknown-linux-gnu.tar.gz
+RUN wget -O gasp-x86_64-unknown-linux-gnu.tar.gz https://github.com/AspireOrg/gAsp/releases/download/v${ASPIREGAS_VER}/gasp-x86_64-unknown-linux-gnu.tar.gz
 RUN mkdir -p /tmp/gasp-x86_64-unknown-linux-gnu/
 RUN tar -xvzf gasp-x86_64-unknown-linux-gnu.tar.gz -C /tmp/gasp-x86_64-unknown-linux-gnu/
 RUN install -C -m 755 -o root -g root --backup=off gasp-x86_64-unknown-linux-gnu/* /usr/local/bin/
