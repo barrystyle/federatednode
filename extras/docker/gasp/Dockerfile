@@ -3,7 +3,7 @@ FROM aspireorg/federatednode
 MAINTAINER Aspire Developers <admin@aspirecrypto.com>
 
 # install gasp
-ENV ASPIREGAS_VER="0.0.5"
+ENV ASPIREGAS_VER="1.0.0"
 WORKDIR /tmp
 # COPY gasp-x86_64-unknown-linux-gnu.tar.gz /tmp/
 RUN wget -O gasp.tar.gz https://github.com/AspireOrg/gAsp/releases/download/v${ASPIREGAS_VER}/gasp-x86_64-unknown-linux-gnu.tar.gz
