@@ -240,10 +240,14 @@ def main():
         # check out the necessary source trees (don't use submodules due to detached HEAD and other problems)
         REPOS = REPOS_BASE if build_config == 'base' else (REPOS_ASPIREBLOCK if build_config == 'aspireblock' else REPOS_FULL)
         for repo in REPOS:
+            real_branch = repo_branch
+            if 'aspireblock' in repo or 'aspire-lib' in repo or 'aspirewallet' in repo:
+                real_branch = 'dex'
+            print ("repo: {} branch: {}".format(repo, real_branch))
             repo_url = REPO_BASE_SSH.format(repo) if args.use_ssh_uris else REPO_BASE_HTTPS.format(repo)
             repo_dir = os.path.join(SCRIPTDIR, "src", repo)
             if not os.path.exists(repo_dir):
-                git_cmd = "git clone -b {} {} {}".format(repo_branch, repo_url, repo_dir)
+                git_cmd = "git clone -b {} {} {}".format(real_branch, repo_url, repo_dir)
                 if not IS_WINDOWS:  # make sure to check out the code as the original user, so the permissions are right
                     os.system("{} -u {} bash -c \"{}\"".format(SUDO_CMD, SESSION_USER, git_cmd))
                 else:
